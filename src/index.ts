@@ -15,6 +15,15 @@ const DEFAULT_CELENIUM_ENDPOINT: Record<EasyCelestiaChain, string> = {
   mocha: "https://api-mocha.celenium.io/v1",
 };
 
+enum sortOrder {
+  asc,
+  desc
+}
+enum sortField {
+  time,
+  size
+}
+
 export class EasyCelestia {
   nodeClient: CelestiaNodeClient;
   rpcClient: CelestiaRPCClient;
@@ -30,7 +39,8 @@ export class EasyCelestia {
       options.rpcEndpoint || DEFAULT_RPC[network]
     );
     this.celeniumClient = new CeleniumClient(
-      options.celeniumEndpoint || DEFAULT_CELENIUM_ENDPOINT[network]
+      options.celeniumEndpoint || DEFAULT_CELENIUM_ENDPOINT[network],
+      options.celeniumApiKey
     );
   }
 
@@ -48,6 +58,38 @@ export class EasyCelestia {
       return Buffer.from(namespace);
     }
   }
+
+  /**
+   * Retrieves the info from the given namespace.
+   * @param namespace - The namespace under which the blob exists.
+   * @returns ...something.
+   */
+  async celeniumNamespace(namespace: string | Uint8Array){
+    return await this.celeniumClient.get("/namespace/"+namespace);
+  }
+
+  /**
+   * Retrieves blobs based on the params.
+   * @param limit - The number of blobs to return.
+   * @param offset - The offset
+   * @param sort - The sort order (asc/desc)
+   * @param sort_by - The sort field (time/size). If empty, internal id is used
+   * @param commitment - Commitment value in URLbase64 format
+   * @param from - Time from in unix timestamp
+   * @param to - Time to in unix timestamp
+   * @param namespaces - Comma-separated celestia namespaces
+   * @param signers - Comma-separated celestia addresses
+   * @param cursor - Last entity id which is used for cursor pagination
+   * @returns ...something.
+   */
+  async celeniumListBlobsWithFilters(limit?: number, offset?: number, sort?: sortOrder, 
+    sort_by?: sortField, commitment?: string, from?: number, to?: number, 
+    namespaces?: string, signers?: string, cursor?: number
+  ){
+    return await this.celeniumClient.get("/blob?"); //todo add args
+  }
+
+
 
   /**
    * Retrieves the blob by ID under the given namespace..

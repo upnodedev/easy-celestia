@@ -7,6 +7,16 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+# Compiled JS files for testing
+da.js
+da2.js
+celenium.js
+celestia.js
+rpc.js
+EasyCelestia.js
+index.js
+utils.js
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

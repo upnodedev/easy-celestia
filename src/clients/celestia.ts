@@ -40,8 +40,14 @@ export class CelestiaNodeClient {
             (errorDetails ? ` - ${JSON.stringify(errorDetails)}` : "")
         );
       }
+      //console.log("Response: ")
+      //console.log(response);
+      //console.log("Body: ")
+      //console.log(response.body)
 
+      //console.log("Json: ")
       const data = await response.json();
+      //console.log(data.result);
 
       if (data.error) {
         throw new Error(`${data.error.message}`);

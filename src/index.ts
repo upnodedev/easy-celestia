@@ -4,6 +4,7 @@ import { CelestiaNodeClient } from "./clients/celestia";
 import { CelestiaRPCClient } from "./clients/rpc";
 import { EasyCelestiaChain, EasyCelestiaOptions } from "./types/EasyCelestia";
 import { toBytes } from "./utils";
+import { json } from "stream/consumers";
 
 const DEFAULT_RPC: Record<EasyCelestiaChain, string> = {
   mainnet: "https://rpc.celestia.pops.one",
@@ -105,6 +106,20 @@ export class EasyCelestia {
     return await this.celeniumClient.get("/blob", filtersRecord); //todo add args
   }
 
+  /**
+   * Retrieves blob bodies based on the params.
+   * @param limit - The number of blobs to return.
+   * @param offset - The offset
+   * @param sort - The sort order (asc/desc)
+   * @param sort_by - The sort field (time/size). If empty, internal id is used
+   * @param commitment - Commitment value in URLbase64 format
+   * @param from - Time from in unix timestamp
+   * @param to - Time to in unix timestamp
+   * @param namespaces - Comma-separated celestia namespaces
+   * @param signers - Comma-separated celestia addresses
+   * @param cursor - Last entity id which is used for cursor pagination
+   * @returns - JSON object containing a list of the returned blobs.
+   */
   async celeniumListBlobsWithFiltersFetchBody(...rawArgs: any[]){
     const rawFilters = ["limit","offset","sort","sortBy","commitment","from","to","namespaces","signers","cursor"];
     
@@ -124,24 +139,68 @@ export class EasyCelestia {
     //Get blob details
     const blobs =  await this.celeniumClient.get("/blob", filtersRecord); //todo add args
     var results = [];
+
+    //Get blob contents for each blob
     for(var index in blobs){
-      console.log("Blob")
-      let namespace = blobs[index].namespace;
+      console.log("Blob "+index+": ");
+      console.log(blobs[index]);
 
-      let height = blobs[index].height;
-      let height64 = Buffer.from((height + "")).toString("base64").slice(0, -2);
+      //Namespace needs to be in hex from base64, but we need to add an 0x at the start for the namespace func.
+      let rawNamespace = blobs[index].namespace;
+      console.log("rawNamespace: "+rawNamespace);
 
-      let commitment = blobs[index].commitment;
+      let bufferNamespace = Buffer.from(rawNamespace, 'base64');
+      let namespace = "0x" + bufferNamespace.toString('hex');
+      console.log("namespace: "+namespace);
 
-      let id = commitment;
-      
-      console.log(height);
-      console.log(commitment);
-      console.log(id);
+      //Height needs to be in hex.
+      let height = blobs[index].height.toString(16);
+      console.log("height: "+height);
 
-      results.push(await this.get(namespace, id));
+      //replace last N bytes with reversed height bytes
+      let padding = ("0000000000000000")
+      padding = padding.substring(0, (16 - height.length))
+      console.log("Height length: "+height.length)
+      console.log("Padding :" +padding);
+
+      let heightPadded = padding + height;
+      console.log("heightPadded: "+heightPadded);
+
+      //reverse the height bytes.
+      let h1 = heightPadded.match(/.{1,2}/g)!
+      //console.log(h1);
+      let h2 = [];
+      for(let i=(h1.length - 1); i>=0; i--){
+        h2.push(h1[i]);
+      }
+      //console.log(h2);
+      let formattedHeight = h2.join("");
+      console.log("formattedHeight: "+formattedHeight);
+
+      //Commitment should be in hex, currently it's in base64.
+      let rawCommitment = blobs[index].commitment;
+      console.log("rawCommitment: "+rawCommitment);
+
+      let bufferCommitment = Buffer.from(rawCommitment, 'base64');
+      let commitment = bufferCommitment.toString('hex');
+      console.log("commitment: "+commitment);
+
+      //ID is the formatted height added to the commitment.
+      let idHex = formattedHeight + commitment;
+      console.log("idHex: "+idHex);
+
+      let bufferId = Buffer.from(idHex, 'hex');
+      let id = bufferId.toString('base64');
+      console.log("id: "+id)
+
+      //Invoke getter for the blob contents, and add to array.
+      //results.push(await this.get(namespace, id));
+      if(blobs[index].content_type === 'application/json' ||
+      blobs[index].content_type === 'text/plain; charset=utf-8') {
+        results.push(await this.get(namespace, id));
+      } else results.push(await this.getRaw(namespace, id));
     }
-    return blobs;
+    return results;
   }
 
 

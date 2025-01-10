@@ -32,6 +32,7 @@ async function run() {
 
   //const data3 = await celenium.celeniumListBlobsWithFiltersFetchBody(10, undefined, "desc", "time", commitment);
   const data3 = await celenium.celeniumListBlobsWithFiltersFetchBody(10);
+  //const data3 = await celenium.celeniumListBlobsWithFiltersFetchBody(10, undefined, undefined, undefined, undefined, undefined, undefined, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgFQ=");
   
   console.log(data3);
 

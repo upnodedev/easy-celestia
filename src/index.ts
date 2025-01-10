@@ -142,29 +142,30 @@ export class EasyCelestia {
 
     //Get blob contents for each blob
     for(var index in blobs){
-      console.log("Blob "+index+": ");
-      console.log(blobs[index]);
+      ///
+      //console.log("Blob "+index+": ");
+      //console.log(blobs[index]);
 
       //Namespace needs to be in hex from base64, but we need to add an 0x at the start for the namespace func.
       let rawNamespace = blobs[index].namespace;
-      console.log("rawNamespace: "+rawNamespace);
+      //console.log("rawNamespace: "+rawNamespace);
 
       let bufferNamespace = Buffer.from(rawNamespace, 'base64');
       let namespace = "0x" + bufferNamespace.toString('hex');
-      console.log("namespace: "+namespace);
+      //console.log("namespace: "+namespace);
 
       //Height needs to be in hex.
       let height = blobs[index].height.toString(16);
-      console.log("height: "+height);
+      //console.log("height: "+height);
 
       //replace last N bytes with reversed height bytes
       let padding = ("0000000000000000")
       padding = padding.substring(0, (16 - height.length))
-      console.log("Height length: "+height.length)
-      console.log("Padding :" +padding);
+      //console.log("Height length: "+height.length)
+      //console.log("Padding :" +padding);
 
       let heightPadded = padding + height;
-      console.log("heightPadded: "+heightPadded);
+      //console.log("heightPadded: "+heightPadded);
 
       //reverse the height bytes.
       let h1 = heightPadded.match(/.{1,2}/g)!
@@ -175,30 +176,39 @@ export class EasyCelestia {
       }
       //console.log(h2);
       let formattedHeight = h2.join("");
-      console.log("formattedHeight: "+formattedHeight);
+      //console.log("formattedHeight: "+formattedHeight);
 
       //Commitment should be in hex, currently it's in base64.
       let rawCommitment = blobs[index].commitment;
-      console.log("rawCommitment: "+rawCommitment);
+      //console.log("rawCommitment: "+rawCommitment);
 
       let bufferCommitment = Buffer.from(rawCommitment, 'base64');
       let commitment = bufferCommitment.toString('hex');
-      console.log("commitment: "+commitment);
+      //console.log("commitment: "+commitment);
 
       //ID is the formatted height added to the commitment.
       let idHex = formattedHeight + commitment;
-      console.log("idHex: "+idHex);
+      //console.log("idHex: "+idHex);
 
       let bufferId = Buffer.from(idHex, 'hex');
       let id = bufferId.toString('base64');
-      console.log("id: "+id)
+      //console.log("id: "+id);
 
       //Invoke getter for the blob contents, and add to array.
       //results.push(await this.get(namespace, id));
+      
       if(blobs[index].content_type === 'application/json' ||
       blobs[index].content_type === 'text/plain; charset=utf-8') {
         results.push(await this.get(namespace, id));
-      } else results.push(await this.getRaw(namespace, id));
+
+      } else if(blobs[index].content_type === 'application/octet-stream' ){
+        // If it’s an octet-stream then decode base64 to Uint8Array hex
+        const base64Results = await this.getRaw(namespace, id);
+        let output = base64Results.map(result => (Buffer.from(result, 'base64')));
+        results.push(output);
+      } 
+      else results.push(await this.getRaw(namespace, id));
+       
     }
     return results;
   }

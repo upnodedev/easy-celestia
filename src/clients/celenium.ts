@@ -52,7 +52,7 @@ export class CeleniumClient {
       }
 
       // Handle the JSON-RPC response
-      return data.result;
+      return data; //.result; this returns undefined
     }
 
     throw new Error("Maximum retry attempts reached");
@@ -63,6 +63,7 @@ export class CeleniumClient {
       const queryString = new URLSearchParams(params).toString();
       url = `${url}${url.includes("?") ? "&" : "?"}${queryString}`;
     }
+    
     return this.makeRequest(url, "GET");
   }
 

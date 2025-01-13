@@ -1,8 +1,8 @@
 {
   "name": "easy-celestia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An easy to use library to work with Celestia DA",
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -26,12 +26,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/my-typescript-package.git"
+    "url": "https://github.com/upnodedev/easy-celestia.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/my-typescript-package/issues"
+    "url": "https://github.com/upnodedev/easy-celestia/issues"
   },
-  "homepage": "https://github.com/your-username/my-typescript-package#readme",
+  "homepage": "https://github.com/upnodedev/easy-celestia",
   "devDependencies": {
     "@types/node": "^22.10.2",
     "tsup": "^8.3.5",

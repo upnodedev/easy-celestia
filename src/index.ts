@@ -17,12 +17,12 @@ const DEFAULT_CELENIUM_ENDPOINT: Record<EasyCelestiaChain, string> = {
 };
 
 export enum sortOrder {
-  asc,
-  desc
+  asc = "asc",
+  desc = "desc",
 }
 export enum sortField {
-  time,
-  size
+  time = "time",
+  size = "size",
 }
 
 export interface CeleniumListBlobsArgs {

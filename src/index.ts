@@ -293,6 +293,135 @@ export class EasyCelestia {
     return results;
   }
 
+  async celeniumListBlobsWithFiltersFetchAll( params: CeleniumListBlobsArgs /*...rawArgs: any[]*/){
+
+    //if there exists some namespace argument
+    if(params.namespaces && params.namespaces.length > 0){
+      //initialise "ns"
+      let ns = "";
+      //is our arg array or string?
+      if(!Array.isArray(params.namespaces)){
+        //string
+        ns = params.namespaces;
+      } else {
+        //array = 1
+        ns = params.namespaces[0];
+        //array > 1
+        if(params.namespaces.length > 1){
+          for(let i=1; i<params.namespaces.length; i++){
+            ns+=(","+[params.namespaces[i]])
+          }
+        }
+      }
+    }
+
+    //if there exists some signer argument
+    if(params.signers && params.signers.length > 0){
+      //initialise "si"
+      let si = "";
+      //is our arg array or string?
+      if(!Array.isArray(params.signers)){
+        //string
+        si = params.signers;
+      } else {
+        //array = 1
+        si = params.signers[0];
+        //array > 1
+        if(params.signers.length > 1){
+          for(let i=1; i<params.signers.length; i++){
+            si+=(","+[params.signers[i]])
+          }
+        }
+      }
+    }
+
+    //console.log(params.namespaces);
+    //console.log(params.signers);
+
+    //Add filters to record
+    var intermediary = [];
+    for(let key in params) intermediary.push([key, params[key as keyof CeleniumListBlobsArgs]])
+    var filtersRecord : Record<string, string> = Object.fromEntries(intermediary);
+
+    //console.log(filtersRecord);
+
+    //Get blob details
+    const blobs =  await this.celeniumClient.get("/blob", filtersRecord); //todo add args
+    var results = [];
+
+    //Get blob contents for each blob
+    for(var index in blobs){
+      ///
+      //console.log("Blob "+index+": ");
+      //console.log(blobs[index]);
+
+      //Namespace needs to be in hex from base64, but we need to add an 0x at the start for the namespace func.
+      let rawNamespace = blobs[index].namespace;
+      //console.log("rawNamespace: "+rawNamespace);
+
+      let bufferNamespace = Buffer.from(rawNamespace, 'base64');
+      let namespace = "0x" + bufferNamespace.toString('hex');
+      //console.log("namespace: "+namespace);
+
+      //Height needs to be in hex.
+      let height = blobs[index].height.toString(16);
+      //console.log("height: "+height);
+
+      //replace last N bytes with reversed height bytes
+      let padding = ("0000000000000000")
+      padding = padding.substring(0, (16 - height.length))
+      //console.log("Height length: "+height.length)
+      //console.log("Padding :" +padding);
+
+      let heightPadded = padding + height;
+      //console.log("heightPadded: "+heightPadded);
+
+      //reverse the height bytes.
+      let h1 = heightPadded.match(/.{1,2}/g)!
+      //console.log(h1);
+      let h2 = [];
+      for(let i=(h1.length - 1); i>=0; i--){
+        h2.push(h1[i]);
+      }
+      //console.log(h2);
+      let formattedHeight = h2.join("");
+      //console.log("formattedHeight: "+formattedHeight);
+
+      //Commitment should be in hex, currently it's in base64.
+      let rawCommitment = blobs[index].commitment;
+      //console.log("rawCommitment: "+rawCommitment);
+
+      let bufferCommitment = Buffer.from(rawCommitment, 'base64');
+      let commitment = bufferCommitment.toString('hex');
+      //console.log("commitment: "+commitment);
+
+      //ID is the formatted height added to the commitment.
+      let idHex = formattedHeight + commitment;
+      //console.log("idHex: "+idHex);
+
+      let bufferId = Buffer.from(idHex, 'hex');
+      let id = bufferId.toString('base64');
+      //console.log("id: "+id);
+
+      //Invoke getter for the blob contents, and add to array.
+      //results.push(await this.get(namespace, id));
+      
+      if(blobs[index].content_type === 'application/json' ||
+      blobs[index].content_type === 'text/plain; charset=utf-8') {
+        results.push(await this.get(namespace, id));
+
+      } else if(blobs[index].content_type === 'application/octet-stream' ){
+        // If it’s an octet-stream then decode base64 to Uint8Array hex
+        const base64Results = await this.getRaw(namespace, id);
+        let output = base64Results.map(result => (Buffer.from(result, 'base64')));
+        results.push(output);
+      } 
+      else results.push(await this.getRaw(namespace, id));
+       
+    }
+    return [blobs, results];
+  }
+
 
 
   /**

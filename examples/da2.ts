@@ -40,7 +40,7 @@ async function run() {
     namespaces:"AAAAAAAAAAAAAAAAAAAAAAAAAAAAsyuK//bz2rs=",
   }
 
-  const data3 = await celenium.celeniumListBlobsWithFilters(args);
+  const data3 = await celenium.celeniumListBlobsWithFiltersFetchAll(args);
   
   
   

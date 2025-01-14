@@ -96,7 +96,6 @@ export class EasyCelestia {
    * @returns - JSON object containing a list of the returned blobs.
    */
   async celeniumListBlobsWithFilters(params: CeleniumListBlobsArgs){
-
     //if there exists some namespace argument
     if(params.namespaces && params.namespaces.length > 0){
       //initialise "ns"

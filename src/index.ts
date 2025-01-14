@@ -16,11 +16,11 @@ const DEFAULT_CELENIUM_ENDPOINT: Record<EasyCelestiaChain, string> = {
   mocha: "https://api-mocha.celenium.io/v1",
 };
 
-enum sortOrder {
+export enum sortOrder {
   asc,
   desc
 }
-enum sortField {
+export enum sortField {
   time,
   size
 }

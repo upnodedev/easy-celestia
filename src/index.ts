@@ -25,6 +25,19 @@ enum sortField {
   size
 }
 
+export interface CeleniumListBlobsArgs {
+  limit?: number
+  offset?: number
+  sort?: sortOrder, 
+  sort_by?: sortField,
+  commitment?: string,
+  from?: number,
+  to?: number, 
+  namespaces?: string | string[],
+  signers?: string | string[],
+  cursor?: number
+}
+
 export class EasyCelestia {
   nodeClient: CelestiaNodeClient;
   rpcClient: CelestiaRPCClient;
@@ -69,7 +82,7 @@ export class EasyCelestia {
   }
 
   /**
-   * Retrieves blobs based on the params.
+   * Retrieves blobs based on the params (a celeniumListBlobsArgs object).
    * @param limit - The number of blobs to return.
    * @param offset - The offset
    * @param sort - The sort order (asc/desc)
@@ -82,32 +95,64 @@ export class EasyCelestia {
    * @param cursor - Last entity id which is used for cursor pagination
    * @returns - JSON object containing a list of the returned blobs.
    */
-  async celeniumListBlobsWithFilters(/*limit?: number, offset?: number, sort?: sortOrder, 
-    sort_by?: sortField, commitment?: string, from?: number, to?: number, 
-    namespaces?: string, signers?: string, cursor?: number*/ ...rawArgs: any[]
-  ){
-    //define arg names for url
-    const rawFilters = ["limit","offset","sort","sortBy","commitment","from","to","namespaces","signers","cursor"];
-    
-    //filter the args and url to remove undefined parameters
-    let filters : string[] = [];
-    let args : any[] = [];
-    for(var i=0; i<rawArgs.length; i++){
-      if(rawArgs[i] !== undefined ){
-        filters.push(rawFilters[i]);
-        args.push(rawArgs[i])
+  async celeniumListBlobsWithFilters(params: CeleniumListBlobsArgs){
+
+    //if there exists some namespace argument
+    if(params.namespaces && params.namespaces.length > 0){
+      //initialise "ns"
+      let ns = "";
+      //is our arg array or string?
+      if(!Array.isArray(params.namespaces)){
+        //string
+        ns = params.namespaces;
+      } else {
+        //array = 1
+        ns = params.namespaces[0];
+        //array > 1
+        if(params.namespaces.length > 1){
+          for(let i=1; i<params.namespaces.length; i++){
+            ns+=(","+[params.namespaces[i]])
+          }
+        }
       }
     }
 
+    //if there exists some signer argument
+    if(params.signers && params.signers.length > 0){
+      //initialise "si"
+      let si = "";
+      //is our arg array or string?
+      if(!Array.isArray(params.signers)){
+        //string
+        si = params.signers;
+      } else {
+        //array = 1
+        si = params.signers[0];
+        //array > 1
+        if(params.signers.length > 1){
+          for(let i=1; i<params.signers.length; i++){
+            si+=(","+[params.signers[i]])
+          }
+        }
+      }
+    }
+
+    console.log(params.namespaces);
+    console.log(params.signers);
+
     //Add filters to record
-    var filtersRecord : Record<string, string> = Object.fromEntries(filters.map(filter => [filter, args[filters.indexOf(filter)]]));
+    var intermediary = [];
+    for(let key in params) intermediary.push([key, (params as any)[key]])
+    var filtersRecord : Record<string, string> = Object.fromEntries(intermediary);
+
+    console.log(filtersRecord);
 
     //Return result
     return await this.celeniumClient.get("/blob", filtersRecord); //todo add args
   }
 
   /**
-   * Retrieves blob bodies based on the params.
+   * Retrieves blob bodies based on the params (a CeleniumListBlobsArgs object).
    * @param limit - The number of blobs to return.
    * @param offset - The offset
    * @param sort - The sort order (asc/desc)
@@ -120,21 +165,57 @@ export class EasyCelestia {
    * @param cursor - Last entity id which is used for cursor pagination
    * @returns - JSON object containing a list of the returned blobs.
    */
-  async celeniumListBlobsWithFiltersFetchBody(...rawArgs: any[]){
-    const rawFilters = ["limit","offset","sort","sortBy","commitment","from","to","namespaces","signers","cursor"];
-    
-    //filter the args and url to remove undefined parameters
-    let filters : string[] = [];
-    let args : any[] = [];
-    for(var i=0; i<rawArgs.length; i++){
-      if(rawArgs[i] !== undefined ){
-        filters.push(rawFilters[i]);
-        args.push(rawArgs[i])
+  async celeniumListBlobsWithFiltersFetchBody( params: CeleniumListBlobsArgs /*...rawArgs: any[]*/){
+
+    //if there exists some namespace argument
+    if(params.namespaces && params.namespaces.length > 0){
+      //initialise "ns"
+      let ns = "";
+      //is our arg array or string?
+      if(!Array.isArray(params.namespaces)){
+        //string
+        ns = params.namespaces;
+      } else {
+        //array = 1
+        ns = params.namespaces[0];
+        //array > 1
+        if(params.namespaces.length > 1){
+          for(let i=1; i<params.namespaces.length; i++){
+            ns+=(","+[params.namespaces[i]])
+          }
+        }
       }
     }
 
+    //if there exists some signer argument
+    if(params.signers && params.signers.length > 0){
+      //initialise "si"
+      let si = "";
+      //is our arg array or string?
+      if(!Array.isArray(params.signers)){
+        //string
+        si = params.signers;
+      } else {
+        //array = 1
+        si = params.signers[0];
+        //array > 1
+        if(params.signers.length > 1){
+          for(let i=1; i<params.signers.length; i++){
+            si+=(","+[params.signers[i]])
+          }
+        }
+      }
+    }
+
+    console.log(params.namespaces);
+    console.log(params.signers);
+
     //Add filters to record
-    var filtersRecord : Record<string, string> = Object.fromEntries(filters.map(filter => [filter, args[filters.indexOf(filter)]]));
+    var intermediary = [];
+    for(let key in params) intermediary.push([key, params[key as keyof CeleniumListBlobsArgs]])
+    var filtersRecord : Record<string, string> = Object.fromEntries(intermediary);
+
+    console.log(filtersRecord);
 
     //Get blob details
     const blobs =  await this.celeniumClient.get("/blob", filtersRecord); //todo add args

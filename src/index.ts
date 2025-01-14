@@ -136,15 +136,15 @@ export class EasyCelestia {
       }
     }
 
-    console.log(params.namespaces);
-    console.log(params.signers);
+    //console.log(params.namespaces);
+    //console.log(params.signers);
 
     //Add filters to record
     var intermediary = [];
     for(let key in params) intermediary.push([key, (params as any)[key]])
     var filtersRecord : Record<string, string> = Object.fromEntries(intermediary);
 
-    console.log(filtersRecord);
+    //console.log(filtersRecord);
 
     //Return result
     return await this.celeniumClient.get("/blob", filtersRecord); //todo add args
@@ -206,15 +206,15 @@ export class EasyCelestia {
       }
     }
 
-    console.log(params.namespaces);
-    console.log(params.signers);
+    //console.log(params.namespaces);
+    //console.log(params.signers);
 
     //Add filters to record
     var intermediary = [];
     for(let key in params) intermediary.push([key, params[key as keyof CeleniumListBlobsArgs]])
     var filtersRecord : Record<string, string> = Object.fromEntries(intermediary);
 
-    console.log(filtersRecord);
+    //console.log(filtersRecord);
 
     //Get blob details
     const blobs =  await this.celeniumClient.get("/blob", filtersRecord); //todo add args

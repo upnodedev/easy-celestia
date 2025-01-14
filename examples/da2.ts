@@ -1,5 +1,5 @@
 import { EasyCelestia } from "../src";
-import { celeniumListBlobsArgs } from "../src";
+import { CeleniumListBlobsArgs } from "../src";
 
 const celenium = new EasyCelestia({
   network: 'mocha',
@@ -35,8 +35,9 @@ async function run() {
   //const data3 = await celenium.celeniumListBlobsWithFiltersFetchBody(10);
   //const data3 = await celenium.celeniumListBlobsWithFiltersFetchBody(10, undefined, undefined, undefined, undefined, undefined, undefined, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgFQ=");
   
-  const args : celeniumListBlobsArgs = {
-    limit: 10
+  const args : CeleniumListBlobsArgs = {
+    limit: 10,
+    namespaces:"AAAAAAAAAAAAAAAAAAAAAAAAAAAAsyuK//bz2rs=",
   }
 
   const data3 = await celenium.celeniumListBlobsWithFilters(args);

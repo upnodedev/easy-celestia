@@ -26,6 +26,11 @@ export class CeleniumClient {
         ...(payload && { body: JSON.stringify(payload) }),
       });
 
+      // If response is 204, return empty object
+      if (response.status === 204) {
+        return({});
+      }
+
       // If response is 429, retry after delay
       if (response.status === 429) {
         attempts++;
@@ -44,6 +49,8 @@ export class CeleniumClient {
             (errorDetails ? ` - ${JSON.stringify(errorDetails)}` : "")
         );
       }
+
+      //console.log(response);
 
       const data = await response.json();
 

@@ -37,7 +37,8 @@ async function run() {
   
   const args : CeleniumListBlobsArgs = {
     limit: 10,
-    namespaces:"AAAAAAAAAAAAAAAAAAAAAAAAAAAAsyuK//bz2rs=",
+    namespaces: "AAAAAAAAAAAAAAAAAAAAAAAAAIE5tJubm8hiRuU=",
+    //namespaces:"AAAAAAAAAAAAAAAAAAAAAAAAAAAAsyuK//bz2rs=",
   }
 
   const data3 = await celenium.celeniumListBlobsWithFiltersFetchAll(args);

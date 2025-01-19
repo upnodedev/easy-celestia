@@ -5,6 +5,7 @@ import { CelestiaRPCClient } from "./clients/rpc";
 import { EasyCelestiaChain, EasyCelestiaOptions } from "./types/EasyCelestia";
 import { toBytes } from "./utils";
 import { json } from "stream/consumers";
+require('dotenv').config()
 
 const DEFAULT_RPC: Record<EasyCelestiaChain, string> = {
   mainnet: "https://rpc.celestia.pops.one",
@@ -295,6 +296,9 @@ export class EasyCelestia {
 
   async celeniumListBlobsWithFiltersFetchAll( params: CeleniumListBlobsArgs /*...rawArgs: any[]*/){
 
+    console.log (process.env.CELESTIA_NODE_ENDPOINT!);
+    console.log (process.env.CELESTIA_NODE_API_KEY!);
+    console.log (process.env.CELENIUM_API_KEY!);
     //if there exists some namespace argument
     if(params.namespaces && params.namespaces.length > 0){
       //initialise "ns"

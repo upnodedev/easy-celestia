@@ -1,6 +1,6 @@
 {
   "name": "easy-celestia",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "An easy to use library to work with Celestia DA",
   "main": "dist/index.js",
   "module": "dist/index.js",

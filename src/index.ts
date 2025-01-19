@@ -74,9 +74,10 @@ export class EasyCelestia {
   }
 
   printEnvVars(){
-    console.log (process.env.CELESTIA_NODE_ENDPOINT!);
-    console.log (process.env.CELESTIA_NODE_API_KEY!);
-    console.log (process.env.CELENIUM_API_KEY!);
+    const vars : string[] = [process.env.CELESTIA_NODE_ENDPOINT!, 
+      process.env.CELESTIA_NODE_API_KEY!,
+      process.env.CELENIUM_API_KEY!];
+    return vars;
   }
 
   /**

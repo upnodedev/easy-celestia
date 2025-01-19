@@ -73,6 +73,12 @@ export class EasyCelestia {
     }
   }
 
+  printEnvVars(){
+    console.log (process.env.CELESTIA_NODE_ENDPOINT!);
+    console.log (process.env.CELESTIA_NODE_API_KEY!);
+    console.log (process.env.CELENIUM_API_KEY!);
+  }
+
   /**
    * Retrieves the info from the given namespace.
    * @param namespace - The namespace under which the blob exists.
@@ -296,9 +302,6 @@ export class EasyCelestia {
 
   async celeniumListBlobsWithFiltersFetchAll( params: CeleniumListBlobsArgs /*...rawArgs: any[]*/){
 
-    console.log (process.env.CELESTIA_NODE_ENDPOINT!);
-    console.log (process.env.CELESTIA_NODE_API_KEY!);
-    console.log (process.env.CELENIUM_API_KEY!);
     //if there exists some namespace argument
     if(params.namespaces && params.namespaces.length > 0){
       //initialise "ns"

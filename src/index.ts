@@ -5,7 +5,7 @@ import { CelestiaRPCClient } from "./clients/rpc";
 import { EasyCelestiaChain, EasyCelestiaOptions } from "./types/EasyCelestia";
 import { toBytes } from "./utils";
 import { json } from "stream/consumers";
-require('dotenv').config()
+//require('dotenv').config()
 
 const DEFAULT_RPC: Record<EasyCelestiaChain, string> = {
   mainnet: "https://rpc.celestia.pops.one",
